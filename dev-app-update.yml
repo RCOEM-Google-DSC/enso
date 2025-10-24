@@ -1,0 +1,6 @@
+owner: MasterBhuvnesh
+repo: enso
+provider: github
+updaterCacheDirName: enso-updater
+publisherName:
+  - MasterBhuvnesh
