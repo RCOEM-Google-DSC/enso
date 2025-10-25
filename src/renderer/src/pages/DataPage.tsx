@@ -48,7 +48,7 @@ export default function DataPage() {
 
   useEffect(() => {
     window.discord.setActivity({
-      details: 'Viewing Data Page',
+      details: 'Analyzing Data & Fine-tuning',
       state: 'Managing data',
       largeImageKey: 'https://i.pinimg.com/736x/ee/b2/48/eeb2483a16ccf280d9dc7d56be0c7e50.jpg',
       largeImageText: 'Data Page',

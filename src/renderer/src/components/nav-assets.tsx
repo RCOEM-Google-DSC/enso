@@ -32,7 +32,7 @@ export function NavAssets({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Assets</SidebarGroupLabel>
+      <SidebarGroupLabel className="text-sm">Assets</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible

@@ -73,7 +73,7 @@ export async function setActivity(options: ActivityOptions): Promise<void> {
       instance: false,
       startTimestamp: options.startTimestamp || getAppStartTimestamp()
     })
-    console.log('Discord activity set:', options)
+    // console.log('Discord activity set:', options) // DEBUG
   } catch (error) {
     console.error('Failed to set Discord activity:', error)
   }

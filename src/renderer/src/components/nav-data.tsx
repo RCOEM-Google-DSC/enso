@@ -19,7 +19,7 @@ export function NavDatabase({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Database</SidebarGroupLabel>
+      <SidebarGroupLabel className="text-sm">Database</SidebarGroupLabel>
       <SidebarMenu>
         {database.map((item) => (
           <SidebarMenuItem key={item.name}>
