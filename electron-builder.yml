@@ -1,8 +1,10 @@
 appId: dev.gdgrbu.enso
 productName: enso
 directories:
+  output: 'dist'
   buildResources: build
 files:
+  - 'out/**'
   - '!**/.vscode/*'
   - '!src/*'
   - '!electron.vite.config.{js,ts,mjs,cjs}'

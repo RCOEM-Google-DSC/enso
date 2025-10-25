@@ -25,7 +25,7 @@ const initialData: Row[] = sampleDataRaw.map((row) => ({
   pdfs: row.pdfs.map((pdf) => ({ name: pdf }))
 }))
 
-export default function TestDataPage() {
+export default function DataPage() {
   const [rows, setRows] = useState<Row[]>([])
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -45,6 +45,17 @@ export default function TestDataPage() {
   const [importError, setImportError] = useState<string | null>(null)
   const [importFileName, setImportFileName] = useState<string | null>(null)
   const [importRaw, setImportRaw] = useState<string | null>(null)
+
+  useEffect(() => {
+    window.discord.setActivity({
+      details: 'Viewing Data Page',
+      state: 'Managing data',
+      largeImageKey: 'https://i.pinimg.com/736x/ee/b2/48/eeb2483a16ccf280d9dc7d56be0c7e50.jpg',
+      largeImageText: 'Data Page',
+      smallImageKey: 'gdg',
+      smallImageText: 'GDG'
+    })
+  }, [])
 
   useEffect(() => {
     setRows(initialData)

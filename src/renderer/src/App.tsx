@@ -4,22 +4,22 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@renderer/compone
 import DataPage from '@renderer/pages/DataPage'
 import TestDataPage from '@renderer/pages/TestDataPage'
 
-import Preloader from '@renderer/components/preloader'
-import { useEffect, useState } from 'react'
+// import Preloader from '@renderer/components/preloader'
+// import { useEffect, useState } from 'react'
 
 export default function App() {
   const path = typeof window !== 'undefined' ? window.location.pathname : '/'
 
-  const [showApp, setShowApp] = useState(false)
+  // const [showApp, setShowApp] = useState(false)
 
-  useEffect(() => {
-    const timer = setTimeout(() => setShowApp(true), 1500) // 1.5 seconds
-    return () => clearTimeout(timer)
-  }, [])
+  // useEffect(() => {
+  //   const timer = setTimeout(() => setShowApp(true), 1500) // 1.5 seconds
+  //   return () => clearTimeout(timer)
+  // }, [])
 
-  if (!showApp) {
-    return <Preloader />
-  }
+  // if (!showApp) {
+  //   return <Preloader />
+  // }
 
   return (
     <SidebarProvider>
