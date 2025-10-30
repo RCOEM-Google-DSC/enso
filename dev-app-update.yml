@@ -1,9 +1,10 @@
-owner: MasterBhuvnesh
+owner: RCOEM-Google-DSC
 repo: enso
 provider: github
-repository: 'https://github.com/MasterBhuvnesh/enso'
+repository: 'https://github.com/RCOEM-Google-DSC/enso'
 updaterCacheDirName: enso-updater
 publisherName:
-  - MasterBhuvnesh
+  - RCOEM-Google-DSC
 branch: main
 releaseType: release
+private: false

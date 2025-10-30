@@ -42,12 +42,12 @@ appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
 publish:
-  owner: MasterBhuvnesh
+  owner: RCOEM-Google-DSC
   repo: enso
   provider: github
   updaterCacheDirName: enso-updater
   publisherName:
-    - MasterBhuvnesh
+    - RCOEM-Google-DSC
 
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/
