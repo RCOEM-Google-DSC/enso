@@ -47,17 +47,17 @@ const data = {
   ],
   database: [
     {
-      name: 'DATA',
+      name: 'Production Database',
       url: '/data',
       icon: DatabaseIcon
     },
     {
-      name: 'TEST DATA',
+      name: 'Test Database',
       url: '/test-data',
       icon: DatabaseBackupIcon
     },
     {
-      name: 'DATA CONVERSION',
+      name: 'Data Conversion',
       url: '#',
       icon: DatabaseZapIcon
     }
