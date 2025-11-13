@@ -11,12 +11,14 @@ import {
   SidebarFooter,
   SidebarRail
 } from '@renderer/components/ui/sidebar'
+import { NavMailing } from './nav-mailing'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarContent>
         <NavDatabase database={data.database} />
+        <NavMailing mailing={data.mailing} />
         <NavAssets items={data.Assets} />
       </SidebarContent>
       <SidebarFooter className="mb-4">

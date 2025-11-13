@@ -1,4 +1,12 @@
-import { DatabaseBackupIcon, DatabaseIcon, DatabaseZapIcon, IdCardIcon, Mail } from 'lucide-react'
+import {
+  DatabaseBackupIcon,
+  DatabaseIcon,
+  DatabaseZapIcon,
+  IdCardIcon,
+  Mail,
+  MailIcon,
+  MailsIcon
+} from 'lucide-react'
 
 const data = {
   user: {
@@ -58,8 +66,20 @@ const data = {
     },
     {
       name: 'Data Conversion',
-      url: '#',
+      url: '/data-conversion',
       icon: DatabaseZapIcon
+    }
+  ],
+  mailing: [
+    {
+      name: 'Bulk Mailing',
+      url: '/bulk-mailing',
+      icon: MailsIcon
+    },
+    {
+      name: 'Test Mailing',
+      url: '/test-mailing',
+      icon: MailIcon
     }
   ]
 }

@@ -3,7 +3,7 @@ import { Separator } from '@renderer/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@renderer/components/ui/sidebar'
 import DataPage from '@renderer/pages/DataPage'
 import TestDataPage from '@renderer/pages/TestDataPage'
-
+import DataConversionPage from '@renderer/pages/DataConversionPage'
 // import Preloader from '@renderer/components/preloader'
 // import { useEffect, useState } from 'react'
 
@@ -40,6 +40,8 @@ export default function App() {
             <DataPage />
           ) : path === '/test-data' ? (
             <TestDataPage />
+          ) : path === '/data-conversion' ? (
+            <DataConversionPage />
           ) : (
             <>
               <div className="grid auto-rows-min gap-4 md:grid-cols-3">
