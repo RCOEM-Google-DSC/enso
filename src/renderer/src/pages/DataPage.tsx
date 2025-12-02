@@ -1,14 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
-  ChevronsUpDown,
-  ChevronUp,
-  ChevronDown,
-  RotateCw,
   Trash2,
   FileDown,
   FileUp,
-  X
+  X,
+  RefreshCcw
 } from 'lucide-react'
 
 type Pdf = { name: string }
@@ -19,26 +16,23 @@ type Row = {
   pdfs: Pdf[]
 }
 import sampleDataRaw from '@renderer/data/data.json'
+import DataTable from '@renderer/components/Common/DataTable'
+import { ColumnDef } from '@tanstack/react-table'
+import { Button } from '@renderer/components/ui/button'
+import { handleRemove as removeData, handleRemoveAll as removeAllData } from '@renderer/lib/dataManager'
+import DataRowForm, { Row as FormRow } from '@renderer/components/Common/AddData'
 
-const initialData: Row[] = sampleDataRaw.map((row) => ({
+const DATA_FILE = 'data.json'
+
+const initialData: Row[] = (sampleDataRaw as any[]).map((row: any) => ({
   ...row,
-  pdfs: row.pdfs.map((pdf) => ({ name: pdf }))
+  pdfs: Array.isArray(row.pdfs)
+    ? row.pdfs.map((pdf: any) => ({ name: String(pdf) }))
+    : []
 }))
 
 export default function DataPage() {
   const [rows, setRows] = useState<Row[]>([])
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [pdfsInput, setPdfsInput] = useState('')
-  // const [saved, setSaved] = useState(false);
-
-  // search & sort state
-  const [query, setQuery] = useState('')
-  const [sortAsc, setSortAsc] = useState<boolean | null>(null)
-
-  // pagination
-  const [page, setPage] = useState(1)
-  const rowsPerPage = 6
 
   // --- IMPORT DIALOG STATE ---
   const [importOpen, setImportOpen] = useState(false)
@@ -47,62 +41,33 @@ export default function DataPage() {
   const [importRaw, setImportRaw] = useState<string | null>(null)
 
   useEffect(() => {
-    window.discord.setActivity({
-      details: 'Analyzing Data & Fine-tuning',
-      state: 'Managing data',
-      largeImageKey: 'https://i.pinimg.com/736x/ee/b2/48/eeb2483a16ccf280d9dc7d56be0c7e50.jpg',
-      largeImageText: 'Data Page',
-      smallImageKey: 'gdg',
-      smallImageText: 'GDG'
-    })
-  }, [])
-
-  useEffect(() => {
     setRows(initialData)
   }, [])
 
-  useEffect(() => {
-    setPage(1)
-  }, [query, sortAsc, rows.length])
+  function handleAddRow(newRow: FormRow) {
+    setRows((prev) => [newRow, ...prev])
+  }
 
-  function handleAdd() {
-    const trimmedName = name.trim()
-    const trimmedEmail = email.trim()
-    if (!trimmedName || !trimmedEmail) return
+  async function handleRemove(id: string) {
+    // Use the generalized data manager
+    const res = await removeData(DATA_FILE, id)
 
-    const existingIds = rows
-      .map((r) => (typeof r.id === 'string' ? parseInt(r.id, 10) : r.id))
-      .filter((id) => !isNaN(id))
-    const nextId = existingIds.length ? Math.max(...existingIds) + 1 : 1
-
-    const pdfs: Pdf[] = pdfsInput
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean)
-      .map((p) => ({ name: p, url: '#' }))
-
-    const newRow: Row = {
-      id: String(nextId),
-      name: trimmedName,
-      email: trimmedEmail,
-      pdfs
+    if (res.ok && Array.isArray(res.data)) {
+      // Normalize returned data: pdfs are arrays of strings in the file,
+      // but the UI expects objects with a `name` field.
+      const normalized: Row[] = res.data.map((row: any) => ({
+        id: String(row.id ?? ''),
+        name: String(row.name ?? ''),
+        email: String(row.email ?? ''),
+        pdfs: Array.isArray(row.pdfs)
+          ? row.pdfs.map((p: any) => ({ name: String(p) }))
+          : []
+      }))
+      setRows(normalized)
+    } else {
+      console.log('Failed to remove row:', res.error)
     }
-    setRows((s) => [newRow, ...s])
-    setName('')
-    setEmail('')
-    setPdfsInput('')
-    // setSaved(false);
   }
-
-  function handleRemove(id: string | number) {
-    setRows((s) => s.filter((r) => r.id !== id))
-    // setSaved(false);
-  }
-
-  // function handleSave() {
-  //   setSaved(true);
-  //   setTimeout(() => setSaved(false), 2000);
-  // }
 
   function handleExport() {
     const exportData = rows.map((row) => ({
@@ -127,7 +92,7 @@ export default function DataPage() {
 
   function handleClearAll() {
     setRows([])
-    // setSaved(false);
+    removeAllData(DATA_FILE)
   }
 
   const sampleImportExample = [
@@ -255,37 +220,56 @@ export default function DataPage() {
     setImportError(null)
     setImportFileName(null)
     setImportRaw(null)
-    // setSaved(false);
   }
 
-  const displayedRows = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    const filtered = rows.filter((r) => {
-      if (!q) return true
-      return r.name.toLowerCase().includes(q) || r.email.toLowerCase().includes(q)
-    })
-    if (sortAsc === null) return filtered
-    const dir = sortAsc ? 1 : -1
-    return [...filtered].sort((a, b) => a.name.localeCompare(b.name) * dir)
-  }, [rows, query, sortAsc])
-
-  const pageCount = Math.max(1, Math.ceil(displayedRows.length / rowsPerPage))
-  const paginated = displayedRows.slice((page - 1) * rowsPerPage, page * rowsPerPage)
-
-  const SortIcon = ({ state }: { state: boolean | null }) => {
-    if (state === null) {
-      return <ChevronsUpDown className="h-4 w-4 text-gray-500" />
-    }
-    if (state) {
-      return <ChevronUp className="h-4 w-4 text-gray-700" />
-    }
-    return <ChevronDown className="h-4 w-4 text-gray-700" />
+  function handleRefresh() {
+    setRows(initialData)
   }
+
+  const tableColumns: ColumnDef<Row, any>[] = [
+    { accessorKey: 'id', header: 'ID' },
+    { accessorKey: 'name', header: 'NAME' },
+    { accessorKey: 'email', header: 'EMAIL' },
+    {
+      accessorKey: 'pdfs',
+      header: 'PDFs',
+      cell: ({ getValue }) => {
+        const pdfs = (getValue() as Pdf[]) || []
+        return pdfs.length ? (
+          <div className="flex flex-col gap-1">
+            {pdfs.map((p, i) => (
+              <div
+                key={i}
+                className="inline-block rounded border border-gray-200 bg-gray-50 px-2 py-1 font-medium text-gray-700"
+              >
+                {p.name}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <span className="text-sm text-gray-400">—</span>
+        )
+      }
+    },
+    {
+      id: 'actions',
+      header: 'ACTIONS',
+      cell: ({ row }) => (
+        <button
+          className="rounded-md border border-red-500 bg-red-50 px-2 py-1 text-sm text-red-600 hover:bg-red-100"
+          onClick={() => handleRemove(row.original.id)}
+          type="button"
+        >
+          Remove
+        </button>
+      )
+    }
+  ]
 
   return (
-    <div className="mt-6 ">
+    <div className="mt-5">
       <div className="mx-auto max-w-7xl space-y-4 p-3 sm:p-4 md:p-6">
-        {/* Header section with export/import */}
+        {/* Header section with export/import/refresh data */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap gap-2">
             <button
@@ -311,213 +295,32 @@ export default function DataPage() {
               <span>Import</span>
             </button>
           </div>
-
-          {/* Search and filters */}
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <input
-              type="search"
-              placeholder="Search name or email..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:ring-2 focus:ring-gray-300 focus:outline-none sm:w-56"
-            />
-
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setSortAsc((s) => (s === null ? true : !s))}
-                className={`inline-flex flex-1 items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-gray-50 sm:flex-initial ${
-                  sortAsc === null ? 'text-gray-500' : 'text-gray-800'
-                }`}
-                title="Toggle sort by name"
-              >
-                <SortIcon state={sortAsc} />
-                <span className="hidden sm:inline">
-                  {sortAsc === null ? 'Sort' : sortAsc ? 'Asc' : 'Desc'}
-                </span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setQuery('')
-                  setSortAsc(null)
-                }}
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm hover:bg-gray-50 sm:flex-initial"
-                title="Reset filters"
-              >
-                <RotateCw className="h-4 w-4 text-gray-600" />
-                <span className="hidden text-sm text-gray-600 sm:inline">Reset</span>
-              </button>
-            </div>
-          </div>
+          <Button className='cursor-pointer'
+            onClick={handleRefresh}>
+            <RefreshCcw />
+            Refresh Data
+          </Button>
         </div>
+
         {/* Add Form */}
         <div className="flex flex-col gap-3">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault()
-              handleAdd()
-            }}
-            className="flex flex-col gap-2 sm:flex-row sm:items-center"
-          >
-            <input
-              type="text"
-              name="name"
-              autoComplete="name"
-              aria-label="Name"
-              className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-gray-200 focus:outline-none sm:w-48"
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-
-            <input
-              type="email"
-              name="email"
-              autoComplete="email"
-              aria-label="Email"
-              className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-gray-200 focus:outline-none sm:w-56"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-
-            <input
-              type="text"
-              name="pdfs"
-              aria-label="PDFs (comma separated)"
-              className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-gray-200 focus:outline-none sm:flex-1"
-              placeholder="PDFs (comma separated)"
-              value={pdfsInput}
-              onChange={(e) => setPdfsInput(e.target.value)}
-            />
-
-            <div className="flex w-full sm:w-auto">
-              <button
-                type="submit"
-                disabled={!name.trim() || !email.trim()}
-                className="w-full rounded-md border border-blue-600 bg-blue-50 px-3 py-2 text-sm text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-              >
-                Add
-              </button>
-            </div>
-          </form>
+          <DataRowForm existingRows={rows} onAddRow={handleAddRow} />
         </div>
+
+        {/* DataTable */}
         <div className="flex flex-col gap-3">
-          {/* Desktop Table View */}
-          <div className="hidden overflow-auto rounded-lg border border-gray-200 bg-white shadow-sm md:block">
-            <table className="min-w-full table-auto text-sm">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left text-gray-600">ID</th>
-                  <th className="px-4 py-3 text-left text-gray-600">NAME</th>
-                  <th className="px-4 py-3 text-left text-gray-600">EMAIL</th>
-                  <th className="px-4 py-3 text-left text-gray-600">PDFs</th>
-                  <th className="px-4 py-3 text-left text-gray-600">ACTIONS</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginated.map((r) => (
-                  <tr key={r.id} className="border-t hover:bg-gray-50">
-                    <td className="px-4 py-3 align-top text-gray-700">{r.id}</td>
-                    <td className="px-4 py-3 align-top font-medium text-gray-800">{r.name}</td>
-                    <td className="px-4 py-3 align-top text-sm text-gray-500">{r.email}</td>
-                    <td className="px-4 py-3 align-top">
-                      {r.pdfs.length ? (
-                        <ul className="flex flex-col gap-1">
-                          {r.pdfs.map((p, i) => (
-                            <li key={i}>
-                              <div className="inline-block rounded border border-gray-200 bg-gray-50 px-2 py-1 font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-200">
-                                {p.name}
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <span className="text-sm text-gray-400">—</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 align-top">
-                      <button
-                        className="rounded-md border border-red-500 bg-red-50 px-2 py-1 text-sm text-red-600 hover:bg-red-100"
-                        onClick={() => handleRemove(r.id)}
-                        type="button"
-                      >
-                        Remove
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-
-                {paginated.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-500">
-                      No rows to display. Import some data to get started.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Mobile Card View */}
-          <div className="flex flex-col gap-3 md:hidden">
-            {paginated.length > 0 ? (
-              paginated.map((r) => (
-                <div
-                  key={r.id}
-                  className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
-                >
-                  <div className="mb-3 flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="mb-1 text-sm font-medium text-gray-500">ID : {r.id}</div>
-                      <div className="text-lg font-medium text-gray-800">{r.name}</div>
-                      <div className="mt-1 text-sm text-gray-600">{r.email}</div>
-                    </div>
-                    <button
-                      className="ml-3 rounded-md border border-red-500 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-100"
-                      onClick={() => handleRemove(r.id)}
-                      type="button"
-                    >
-                      Remove
-                    </button>
-                  </div>
-
-                  {r.pdfs.length > 0 && (
-                    <div className="border-t border-gray-100 pt-3">
-                      <div className="mb-2 text-sm font-medium text-gray-500">PDFs</div>
-                      <div className="flex flex-wrap gap-2">
-                        {r.pdfs.map((p, i) => (
-                          <div
-                            key={i}
-                            className="rounded border border-gray-200 bg-gray-50 px-2 py-1 text-sm font-medium text-gray-700"
-                          >
-                            {p.name}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {r.pdfs.length === 0 && (
-                    <div className="border-t border-gray-100 pt-3">
-                      <div className="text-sm text-gray-400">No PDFs</div>
-                    </div>
-                  )}
-                </div>
-              ))
-            ) : (
-              <div className="rounded-lg border border-gray-200 bg-white p-8 text-center shadow-sm">
-                <p className="text-sm text-gray-500">
-                  No rows to display. Import some data to get started.
-                </p>
+          {rows.length > 0 ? (
+            <DataTable columns={tableColumns} data={rows} />
+          ) : (
+            <div className="overflow-auto rounded-lg border border-gray-200 bg-white shadow-sm">
+              <div className="px-4 py-8 text-center text-sm text-gray-500">
+                No rows to display. Import some data or add rows to get started.
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
-          {/* Footer with clear all, count, and pagination */}
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          {/* Footer with clear all */}
+          <div className="flex justify-start">
             <button
               className="inline-flex items-center justify-center gap-2 rounded-md border border-red-300 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-100"
               onClick={handleClearAll}
@@ -526,85 +329,6 @@ export default function DataPage() {
               <Trash2 className="h-4 w-4" />
               Clear All
             </button>
-
-            <div className="text-center text-sm text-gray-600 sm:text-left">
-              Showing {paginated.length} of {displayedRows.length}
-            </div>
-
-            {/* Pagination */}
-            <div className="flex items-center justify-center gap-2">
-              <button
-                className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm font-medium hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                type="button"
-              >
-                Prev
-              </button>
-
-              <div className="hidden items-center gap-1 sm:inline-flex">
-                {Array.from({ length: pageCount }).map((_, idx) => {
-                  const p = idx + 1
-                  if (pageCount > 7) {
-                    if (p === 1 || p === pageCount || (p >= page - 1 && p <= page + 1)) {
-                      return (
-                        <button
-                          key={p}
-                          onClick={() => setPage(p)}
-                          className={`rounded-md border px-3 py-2 text-sm font-medium ${
-                            p === page ? 'border-gray-700 bg-gray-100' : 'border-gray-200 bg-white'
-                          } hover:bg-gray-50`}
-                          type="button"
-                        >
-                          {p}
-                        </button>
-                      )
-                    }
-                    if (p === 2 && page > 3) {
-                      return (
-                        <span key="left-ellipsis" className="px-2 text-sm text-gray-400">
-                          …
-                        </span>
-                      )
-                    }
-                    if (p === pageCount - 1 && page < pageCount - 2) {
-                      return (
-                        <span key="right-ellipsis" className="px-2 text-sm text-gray-400">
-                          …
-                        </span>
-                      )
-                    }
-                    return null
-                  }
-                  return (
-                    <button
-                      key={p}
-                      onClick={() => setPage(p)}
-                      className={`rounded-md border px-3 py-2 text-sm font-medium ${
-                        p === page ? 'border-gray-700 bg-gray-100' : 'border-gray-200 bg-white'
-                      } hover:bg-gray-50`}
-                      type="button"
-                    >
-                      {p}
-                    </button>
-                  )
-                })}
-              </div>
-
-              {/* Mobile page indicator */}
-              <div className="inline-flex items-center text-sm font-medium text-gray-600 sm:hidden">
-                Page {page} / {pageCount}
-              </div>
-
-              <button
-                className="rounded-md border border-gray-200 bg-white px-4 py-2 text-sm font-medium hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-                onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
-                disabled={page === pageCount}
-                type="button"
-              >
-                Next
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -652,12 +376,14 @@ export default function DataPage() {
             </div>
 
             <div className="mt-4 flex items-center gap-3">
-              <label className="flex items-center gap-2">
+              <label htmlFor="file" className="flex items-center gap-2">
                 <input
+                  id="file"
                   type="file"
                   accept=".json,application/json"
                   onChange={(e) => handleFileChosen(e.target.files?.[0] ?? null)}
                   className="block text-sm"
+                  aria-label="Upload JSON file"
                 />
               </label>
 

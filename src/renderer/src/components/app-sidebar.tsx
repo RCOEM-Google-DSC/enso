@@ -2,16 +2,16 @@
 
 import * as React from 'react'
 import data from '@renderer/context'
-import { NavAssets } from '@renderer/components/nav-assets'
-import { NavDatabase } from '@renderer/components/nav-data'
-import { NavUser } from '@renderer/components/nav-user'
+import { NavAssets } from '@renderer/components/Navigation/nav-assets'
+import { NavDatabase } from '@renderer/components/Navigation/nav-data'
+import { NavUser } from '@renderer/components/Navigation/nav-user'
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarRail
 } from '@renderer/components/ui/sidebar'
-import { NavMailing } from './nav-mailing'
+import { NavMailing } from './Navigation/nav-mailing'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (

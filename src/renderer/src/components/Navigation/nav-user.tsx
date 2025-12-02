@@ -3,8 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@renderer/components/ui/avatar'
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@renderer/components/ui/sidebar'
 //  Direct for now later will implement dynamic user ico - User Auth
-import icon from '../assets/icons/icon.png'
-
+import icon from '@renderer/assets/icons/icon.png'
 export function NavUser({
   user
 }: {

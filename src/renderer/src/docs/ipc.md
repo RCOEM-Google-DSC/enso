@@ -1,83 +1,85 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
-import { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
-import winico from '../../resources/icon.ico?asset'
-import { initDiscordRPC, destroyDiscordRPC, setActivity, isDiscordConnected } from './discord'
+# IPC Documentation
 
-function createWindow(): void {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 900,
-    show: false,
-    autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
-    icon: winico,
-    frame: false,
-    webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
-    }
-  })
+## Preload Index.ts
 
-  mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
-  })
+### custom API needed for persisting data changes to files
 
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
-    return { action: 'deny' }
-  })
+```ts
+const api = {
+  window: {
+    minimize: (): void => ipcRenderer.send('window:minimize'),
+    maximize: (): void => ipcRenderer.send('window:maximize'),
+    close: (): void => ipcRenderer.send('window:close')
+  },
 
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
-  } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
-  }
+  saveTestData: (
+    data: unknown
+  ): Promise<{
+    ok: boolean
+    path?: string
+  }> => ipcRenderer.invoke('test-data:save', data),
+
+  // Remove a single record by id. Main process will read/filter/write and return the updated array (or an error).
+  removeTestData: (
+    id: string
+  ): Promise<{
+    ok: boolean
+    path?: string
+    data?: unknown
+  }> => ipcRenderer.invoke('test-data:remove', id),
+
+  // Generalized data operations for any data file
+  removeData: (
+    dataFile: string,
+    id: string
+  ): Promise<{
+    ok: boolean
+    path?: string
+    data?: unknown
+  }> => ipcRenderer.invoke('data:remove', dataFile, id),
+
+  addData: (
+    dataFile: string,
+    record: unknown
+  ): Promise<{
+    ok: boolean
+    path?: string
+    data?: unknown
+  }> => ipcRenderer.invoke('data:add', dataFile, record),
+
+  removeAllData: (
+    dataFile: string
+  ): Promise<{
+    ok: boolean
+    path?: string
+    data?: unknown
+  }> => ipcRenderer.invoke('data:removeAll', dataFile),
+
+  saveData: (
+    dataFile: string,
+    data: unknown
+  ): Promise<{
+    ok: boolean
+    path?: string
+    data?: unknown
+  }> => ipcRenderer.invoke('data:save', dataFile, data),
+
+  loadData: (
+    dataFile: string
+  ): Promise<{
+    ok: boolean
+    path?: string
+    data?: unknown
+  }> => ipcRenderer.invoke('data:load', dataFile)
 }
+```
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
+## IPC Handlers
+
+### Generalized data operations for any data file
+
+```ts
 app.whenReady().then(async () => {
-  // Set app user model id for windows
-  electronApp.setAppUserModelId('dev.gdgrbu')
-
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
-  app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window)
-  })
-
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
-  await initDiscordRPC()
-  createWindow()
-
-  // Set initial activity - Discord
-  setActivity({
-    details: 'Analyzing & automating',
-    state: 'Working',
-    largeImageKey: 'https://i.pinimg.com/1200x/2c/36/44/2c364466678be55dfacfe65c673844c1.jpg',
-    largeImageText: 'ENSO',
-    smallImageKey: 'gdg',
-    smallImageText: 'GDG'
-  })
-
-  // IPC handlers for renderer process - Discord RPC
-  ipcMain.handle('discord:setActivity', async (_event, options) => {
-    await setActivity(options)
-  })
-
-  ipcMain.handle('discord:isConnected', () => {
-    return isDiscordConnected()
-  })
-  
-  // Generalized data operations
   // Helper to resolve data file path
   const getDataFilePath = (filename: string): string => {
     if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
@@ -230,45 +232,5 @@ app.whenReady().then(async () => {
       return { ok: false, error: String(err) }
     }
   })
-
-  // Window controls
-  ipcMain.on('window:minimize', (event) => {
-    const win = BrowserWindow.fromWebContents(event.sender)
-    win?.minimize()
-  })
-
-  ipcMain.on('window:maximize', (event) => {
-    const win = BrowserWindow.fromWebContents(event.sender)
-    if (win?.isMaximized()) {
-      win.unmaximize()
-    } else {
-      win?.maximize()
-    }
-  })
-
-  ipcMain.on('window:close', (event) => {
-    const win = BrowserWindow.fromWebContents(event.sender)
-    win?.close()
-  })
-
-  app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
 })
-
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
-app.on('will-quit', () => {
-  destroyDiscordRPC()
-})
+```
