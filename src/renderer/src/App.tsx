@@ -5,6 +5,12 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@renderer/compone
 import DataPage from '@renderer/pages/DataPage'
 import TestDataPage from '@renderer/pages/TestDataPage'
 import DataConversionPage from '@renderer/pages/DataConversionPage'
+// MAILING PAGES
+import BulkMailing from '@renderer/pages/BulkMailing'
+import TestMailing from '@renderer/pages/TestMailing'
+import TemplatesCertificate from './pages/Templates.Certificate'
+import CertificateMaker from './pages/Generator.Certificate'
+// --- IGNORE ---
 // import Preloader from '@renderer/components/preloader'
 // import { useEffect, useState } from 'react'
 
@@ -49,6 +55,14 @@ export default function App() {
                 <TestDataPage />
               ) : path === '/data-conversion' ? (
                 <DataConversionPage />
+              ) : path === '/bulk-mailing' ? (
+                <BulkMailing />
+              ) : path === '/test-mailing' ? (
+                <TestMailing />
+              ) : path === '/templates.certificate' ? (
+                <TemplatesCertificate />
+              ) : path === '/generate.certificate' ? (
+                <CertificateMaker />
               ) : (
                 <>
                   <div className="grid auto-rows-min gap-4 md:grid-cols-3">

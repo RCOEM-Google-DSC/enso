@@ -134,7 +134,9 @@
   body {
     font-family: 'Product Sans', sans-serif;
     @apply bg-background text-foreground;
-    cursor: url('../assets/icons/cursor.svg') 1 1, auto;
+    cursor:
+      url('../assets/icons/cursor.svg') 1 1,
+      auto;
   }
 }
 

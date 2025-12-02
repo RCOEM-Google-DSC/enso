@@ -23,12 +23,12 @@ const data = {
       isActive: true,
       items: [
         {
-          title: 'Templates',
-          url: '#'
+          title: 'Generate',
+          url: '/generate.certificate'
         },
         {
-          title: 'Parameters',
-          url: '#'
+          title: 'Templates',
+          url: '/templates.certificate'
         }
       ]
     },

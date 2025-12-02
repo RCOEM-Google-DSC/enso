@@ -1,17 +1,29 @@
-import { JSX } from 'react'
+import { JSX, useState, useEffect } from 'react'
 import { Minus, Square, X } from 'lucide-react'
 
 export default function TitleBar(): JSX.Element {
+  const [isMaximized, setIsMaximized] = useState(false)
+
+  useEffect(() => {
+    checkMaximized()
+  }, [])
+
+  const checkMaximized = async () => {
+    const maximized = await window.electron.ipcRenderer.invoke('window:isMaximized')
+    setIsMaximized(maximized)
+  }
+
   const handleMinimize = (): void => {
-    window.api.window.minimize()
+    window.electron.ipcRenderer.send('window:minimize')
   }
 
   const handleMaximize = (): void => {
-    window.api.window.maximize()
+    window.electron.ipcRenderer.send('window:maximize')
+    setTimeout(checkMaximized, 100)
   }
 
   const handleClose = (): void => {
-    window.api.window.close()
+    window.electron.ipcRenderer.send('window:close')
   }
 
   return (

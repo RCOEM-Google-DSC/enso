@@ -1,12 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
-import {
-  Trash2,
-  FileDown,
-  FileUp,
-  X,
-  RefreshCcw
-} from 'lucide-react'
+import { Trash2, FileDown, FileUp, X, RefreshCcw } from 'lucide-react'
 
 type Pdf = { name: string }
 type Row = {
@@ -19,16 +13,17 @@ import sampleDataRaw from '@renderer/data/data.json'
 import DataTable from '@renderer/components/Common/DataTable'
 import { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@renderer/components/ui/button'
-import { handleRemove as removeData, handleRemoveAll as removeAllData } from '@renderer/lib/dataManager'
+import {
+  handleRemove as removeData,
+  handleRemoveAll as removeAllData
+} from '@renderer/lib/dataManager'
 import DataRowForm, { Row as FormRow } from '@renderer/components/Common/AddData'
 
 const DATA_FILE = 'data.json'
 
 const initialData: Row[] = (sampleDataRaw as any[]).map((row: any) => ({
   ...row,
-  pdfs: Array.isArray(row.pdfs)
-    ? row.pdfs.map((pdf: any) => ({ name: String(pdf) }))
-    : []
+  pdfs: Array.isArray(row.pdfs) ? row.pdfs.map((pdf: any) => ({ name: String(pdf) })) : []
 }))
 
 export default function DataPage() {
@@ -59,9 +54,7 @@ export default function DataPage() {
         id: String(row.id ?? ''),
         name: String(row.name ?? ''),
         email: String(row.email ?? ''),
-        pdfs: Array.isArray(row.pdfs)
-          ? row.pdfs.map((p: any) => ({ name: String(p) }))
-          : []
+        pdfs: Array.isArray(row.pdfs) ? row.pdfs.map((p: any) => ({ name: String(p) })) : []
       }))
       setRows(normalized)
     } else {
@@ -295,8 +288,7 @@ export default function DataPage() {
               <span>Import</span>
             </button>
           </div>
-          <Button className='cursor-pointer'
-            onClick={handleRefresh}>
+          <Button className="cursor-pointer" onClick={handleRefresh}>
             <RefreshCcw />
             Refresh Data
           </Button>

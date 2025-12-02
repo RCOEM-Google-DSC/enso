@@ -7,4 +7,4 @@ out
 .env.*
 .env
 code.txt
-.github/copilot-instructions.md
+certificates/

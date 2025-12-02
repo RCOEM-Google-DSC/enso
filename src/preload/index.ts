@@ -16,7 +16,7 @@ const api = {
     path?: string
   }> => ipcRenderer.invoke('test-data:save', data),
 
-  // Remove a single record by id. 
+  // Remove a single record by id.
   removeTestData: (
     id: string
   ): Promise<{

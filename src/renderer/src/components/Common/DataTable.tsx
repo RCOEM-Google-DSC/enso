@@ -1,11 +1,11 @@
-"use client";
+'use client'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@renderer/components/ui/select"
+  SelectValue
+} from '@renderer/components/ui/select'
 import {
   ColumnDef,
   flexRender,
@@ -14,12 +14,12 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-  SortingState,
-} from "@tanstack/react-table";
-import { useState } from "react";
-import { Input } from "@renderer/components/ui/input";
-import { Button } from "@renderer/components/ui/button";
-import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+  SortingState
+} from '@tanstack/react-table'
+import { useState } from 'react'
+import { Input } from '@renderer/components/ui/input'
+import { Button } from '@renderer/components/ui/button'
+import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
 
 import {
   Table,
@@ -27,21 +27,18 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from "@renderer/components/ui/table";
+  TableRow
+} from '@renderer/components/ui/table'
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
 }
 
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
-  const [sorting, setSorting] = useState<SortingState>([]);
+export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+  const [globalFilter, setGlobalFilter] = useState('')
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
+  const [sorting, setSorting] = useState<SortingState>([])
 
   const table = useReactTable({
     data,
@@ -49,7 +46,7 @@ export function DataTable<TData, TValue>({
     state: {
       globalFilter,
       pagination,
-      sorting,
+      sorting
     },
     onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: setPagination,
@@ -57,8 +54,8 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-  });
+    getPaginationRowModel: getPaginationRowModel()
+  })
 
   return (
     <div>
@@ -80,7 +77,7 @@ export function DataTable<TData, TValue>({
               setPagination((p) => ({
                 ...p,
                 pageSize: Number(val),
-                pageIndex: 0,
+                pageIndex: 0
               }))
             }
           >
@@ -104,26 +101,21 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
-                  const canSort = header.column.getCanSort();
-                  const sortState = header.column.getIsSorted();
+                  const canSort = header.column.getCanSort()
+                  const sortState = header.column.getIsSorted()
                   return (
                     <TableHead key={header.id}>
                       {header.isPlaceholder ? null : (
                         <button
                           className="flex items-center gap-2"
-                          onClick={() =>
-                            canSort && header.column.toggleSorting()
-                          }
+                          onClick={() => canSort && header.column.toggleSorting()}
                         >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          {flexRender(header.column.columnDef.header, header.getContext())}
                           {canSort && (
                             <span className="ml-2">
-                              {sortState === "asc" ? (
+                              {sortState === 'asc' ? (
                                 <ArrowUp className="h-3 w-3" />
-                              ) : sortState === "desc" ? (
+                              ) : sortState === 'desc' ? (
                                 <ArrowDown className="h-3 w-3" />
                               ) : (
                                 <ArrowUpDown className="h-3 w-3 opacity-50" />
@@ -133,7 +125,7 @@ export function DataTable<TData, TValue>({
                         </button>
                       )}
                     </TableHead>
-                  );
+                  )
                 })}
               </TableRow>
             ))}
@@ -141,26 +133,17 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
+                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
@@ -172,16 +155,12 @@ export function DataTable<TData, TValue>({
       {/* Pagination controls */}
       <div className="flex items-center justify-between py-4">
         <div className="text-sm text-muted-foreground">
-          Showing{" "}
-          {table.getState().pagination.pageIndex *
-            table.getState().pagination.pageSize +
-            1}{" "}
-          -{" "}
+          Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}{' '}
+          -{' '}
           {Math.min(
-            (table.getState().pagination.pageIndex + 1) *
-            table.getState().pagination.pageSize,
+            (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
             table.getFilteredRowModel().rows.length
-          )}{" "}
+          )}{' '}
           of {table.getFilteredRowModel().rows.length}
         </div>
         <div className="flex items-center gap-2">
@@ -194,8 +173,7 @@ export function DataTable<TData, TValue>({
             Prev
           </Button>
           <div className="px-3 text-sm">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
+            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
           </div>
           <Button
             variant="outline"
@@ -208,7 +186,7 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default DataTable;
+export default DataTable
