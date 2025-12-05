@@ -296,25 +296,25 @@ export default function CertificateMaker() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50 p-8 text-slate-900">
+    <div className="min-h-screen p-8 text-gray-900">
       <div className="mx-auto max-w-6xl space-y-8">
         {/* Header */}
-        <div className="flex items-center space-x-3 border-b pb-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white shadow-md">
-            <FileSpreadsheet className="h-6 w-6" />
+        <div className="flex items-center space-x-3 pb-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white border-2 border-gray-200 text-gray-500 ">
+            <FileSpreadsheet className="h-5 w-5" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Certificate Maker</h1>
+          <h1 className="text-2xl  tracking-tight text-gray-900">Certificate Maker</h1>
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Main Controls */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="rounded-xl border border-gray-200 bg-white p-6 ">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-slate-900">Configuration</h2>
+                <h2 className="text-xl  text-gray-900">Configuration</h2>
                 <button
                   onClick={() => setShowConfig(!showConfig)}
-                  className="p-2 text-slate-500 hover:text-blue-600 hover:bg-slate-100 rounded-md transition-colors"
+                  className="p-2 text-gray-500 hover:text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
                   title="PDF Settings"
                 >
                   <Sliders className="h-5 w-5" />
@@ -323,24 +323,22 @@ export default function CertificateMaker() {
 
               {/* PDF Settings Panel */}
               {showConfig && (
-                <div className="mb-6 rounded-lg border border-slate-200 bg-slate-50 p-4 animate-in fade-in slide-in-from-top-2">
-                  <h3 className="mb-3 text-sm font-semibold text-slate-700">
-                    PDF Styling Parameters
-                  </h3>
+                <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4 animate-in fade-in slide-in-from-top-2">
+                  <h3 className="mb-3 text-md  text-gray-700">PDF Styling Parameters</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs font-medium text-slate-500">Font Size</label>
+                      <label className="text-md font-medium text-gray-500">Font Size</label>
                       <input
                         type="number"
                         value={config.fontSize}
                         onChange={(e) =>
                           saveConfig({ ...config, fontSize: parseInt(e.target.value) })
                         }
-                        className="mt-1 flex h-9 w-full rounded-md border border-slate-300 bg-white px-3 py-1 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="mt-1 flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm  focus:border-black-500 focus:outline-none focus:ring-1 focus:ring-gray-200"
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-slate-500">
+                      <label className="text-md font-medium text-gray-500">
                         Vertical Offset (Y)
                       </label>
                       <input
@@ -349,16 +347,16 @@ export default function CertificateMaker() {
                         onChange={(e) =>
                           saveConfig({ ...config, yOffset: parseInt(e.target.value) })
                         }
-                        className="mt-1 flex h-9 w-full rounded-md border border-slate-300 bg-white px-3 py-1 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="mt-1 flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm  focus:border-black-500 focus:outline-none focus:ring-1 focus:ring-gray-200"
                       />
                     </div>
                     <div className="col-span-2">
-                      <label className="text-xs font-medium text-slate-500 mb-1 block">
+                      <label className="text-md font-medium text-gray-500 mb-1 block">
                         Text Color (RGB)
                       </label>
                       <div className="flex gap-2">
                         <div className="flex-1">
-                          <span className="text-[10px] text-red-500 font-bold block">R</span>
+                          <span className="text-[10px] text-red-500 font-bold block">Red</span>
                           <input
                             type="number"
                             min="0"
@@ -370,11 +368,11 @@ export default function CertificateMaker() {
                                 textColor: { ...config.textColor, r: parseInt(e.target.value) }
                               })
                             }
-                            className="w-full rounded border border-slate-300 px-2 py-1 text-sm"
+                            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
                           />
                         </div>
                         <div className="flex-1">
-                          <span className="text-[10px] text-green-500 font-bold block">G</span>
+                          <span className="text-[10px] text-green-500 font-bold block">Green</span>
                           <input
                             type="number"
                             min="0"
@@ -386,11 +384,11 @@ export default function CertificateMaker() {
                                 textColor: { ...config.textColor, g: parseInt(e.target.value) }
                               })
                             }
-                            className="w-full rounded border border-slate-300 px-2 py-1 text-sm"
+                            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
                           />
                         </div>
                         <div className="flex-1">
-                          <span className="text-[10px] text-blue-500 font-bold block">B</span>
+                          <span className="text-[10px] text-blue-500 font-bold block">Blue</span>
                           <input
                             type="number"
                             min="0"
@@ -402,11 +400,11 @@ export default function CertificateMaker() {
                                 textColor: { ...config.textColor, b: parseInt(e.target.value) }
                               })
                             }
-                            className="w-full rounded border border-slate-300 px-2 py-1 text-sm"
+                            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
                           />
                         </div>
                         <div
-                          className="w-10 h-10 rounded border border-slate-300 mt-auto shadow-sm"
+                          className="w-10 h-10 rounded border border-gray-300 mt-auto shadow-sm"
                           style={{
                             backgroundColor: `rgb(${config.textColor.r}, ${config.textColor.g}, ${config.textColor.b})`
                           }}
@@ -422,13 +420,15 @@ export default function CertificateMaker() {
               <div className="mb-6 space-y-2">
                 <label className="text-sm font-medium">Select Template</label>
                 <select
-                  className="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                  className="m-2 flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-gray-300 focus:outline-none transition duration-150 ease-in-out hover:border-gray-300"
                   value={selectedTemplate}
                   onChange={(e) => setSelectedTemplate(e.target.value)}
                 >
-                  <option value="">-- Choose a Template --</option>
+                  <option value="" className="text-gray-500">
+                    -- Choose a Template --
+                  </option>
                   {templates.map((t) => (
-                    <option key={t.fileName} value={t.name}>
+                    <option key={t.fileName} value={t.name} className="text-gray-900">
                       {t.name}
                     </option>
                   ))}
@@ -436,13 +436,13 @@ export default function CertificateMaker() {
               </div>
 
               {/* Mode Toggle */}
-              <div className="mb-6 rounded-lg bg-slate-100 p-1 flex">
+              <div className="mb-6 rounded-lg bg-gray-100 p-1 flex">
                 <button
                   onClick={() => setTestMode(true)}
                   className={`flex-1 flex items-center justify-center py-2 text-sm font-medium rounded-md transition-all ${
                     testMode
                       ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-900'
+                      : 'text-gray-500 hover:text-gray-900'
                   }`}
                 >
                   <Settings className="mr-2 h-4 w-4" />
@@ -453,7 +453,7 @@ export default function CertificateMaker() {
                   className={`flex-1 flex items-center justify-center py-2 text-sm font-medium rounded-md transition-all ${
                     !testMode
                       ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-900'
+                      : 'text-gray-500 hover:text-gray-900'
                   }`}
                 >
                   <FileText className="mr-2 h-4 w-4" />
@@ -466,16 +466,18 @@ export default function CertificateMaker() {
                 {testMode ? (
                   // Test Mode UI
                   <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Recipient Name</label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                    <div className="space-y-3">
+                      <label className="text-md font-medium py-1.5 mt-1.5 mb-1.5">
+                        Recipient Name
+                      </label>
+                      <div className="relative m-2">
+                        <User className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                         <input
                           type="text"
                           value={testName}
                           onChange={(e) => setTestName(e.target.value)}
                           placeholder="Enter name for certificate..."
-                          className="pl-9 flex h-10 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                          className="pl-9 flex h-10 w-full rounded-md border border-gray-300 px-3 py-5 text-sm focus:ring-2 focus:ring-gray-300 focus:outline-none"
                         />
                       </div>
                     </div>
@@ -484,7 +486,7 @@ export default function CertificateMaker() {
                       <button
                         onClick={handlePreview}
                         disabled={isProcessing || !testName || !selectedTemplate}
-                        className="flex-1 inline-flex items-center justify-center rounded-md border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-900 hover:bg-slate-50 focus:ring-2 focus:ring-blue-600"
+                        className="flex-1 inline-flex items-center justify-center rounded-md border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50 focus:ring-2 focus:ring-blue-600"
                       >
                         {isProcessing ? (
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -506,7 +508,7 @@ export default function CertificateMaker() {
                 ) : (
                   // Bulk Mode UI
                   <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                    <div className="rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+                    <div className="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center">
                       <input
                         type="file"
                         id="bulk-upload"
@@ -518,11 +520,11 @@ export default function CertificateMaker() {
                         htmlFor="bulk-upload"
                         className="cursor-pointer flex flex-col items-center"
                       >
-                        <Upload className="h-8 w-8 text-slate-400 mb-3" />
-                        <span className="text-sm font-medium text-slate-900">
+                        <Upload className="h-5 w-5 text-gray-400 mb-3" />
+                        <span className="text-md font-medium text-gray-900">
                           {bulkFile ? bulkFile.name : 'Upload Data File'}
                         </span>
-                        <span className="text-xs text-slate-500 mt-1">
+                        <span className="text-md text-gray-500 mt-1">
                           Supports .txt, .csv, .json, .xlsx
                         </span>
                       </label>
@@ -538,7 +540,7 @@ export default function CertificateMaker() {
                     <button
                       onClick={handleBulkGenerate}
                       disabled={isProcessing || bulkNames.length === 0 || !selectedTemplate}
-                      className="w-full mt-4 inline-flex items-center justify-center rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full mt-4 inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isProcessing ? (
                         <>
@@ -560,30 +562,23 @@ export default function CertificateMaker() {
 
           {/* History / Status Side Panel */}
           <div className="lg:col-span-1">
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm h-full max-h-[600px] flex flex-col">
-              <h2 className="mb-4 text-lg font-semibold text-slate-900">Recent Generation</h2>
+            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm h-full max-h-[600px] flex flex-col">
+              <h2 className="mb-4 text-lg text-gray-900">Recent Generation</h2>
 
               <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
                 {generatedRecords.length === 0 ? (
-                  <div className="text-center py-10 text-slate-500">
-                    <p className="text-sm">No certificates generated yet.</p>
+                  <div className="text-center py-10 text-gray-500">
+                    <p className="text-md">No certificates generated yet.</p>
                   </div>
                 ) : (
                   generatedRecords.map((record, i) => (
                     <div
                       key={i}
-                      className="flex items-start p-3 rounded-lg border border-slate-100 bg-slate-50"
+                      className="flex items-start p-2 rounded-lg border border-gray-100 bg-gray-50"
                     >
-                      <div className="mt-1 mr-3">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                      </div>
                       <div className="overflow-hidden">
-                        <p className="text-sm font-medium text-slate-900 truncate">
+                        <p className="text-sm font-medium text-gray-900 truncate">
                           {record.recipientName}
-                        </p>
-                        <p className="text-xs text-slate-500 truncate">{record.templateName}</p>
-                        <p className="text-[10px] text-slate-400 mt-1">
-                          {new Date(record.date).toLocaleString()}
                         </p>
                       </div>
                     </div>

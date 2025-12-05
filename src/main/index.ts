@@ -246,6 +246,9 @@ app.whenReady().then(async () => {
 
   // --- DATA HANDLERS ---
   const getDataFilePath = (filename: string): string => {
+    if (filename === 'generated.certificates.json') {
+      return join(app.getPath('userData'), filename)
+    }
     if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
       return join(process.cwd(), 'src', 'renderer', 'src', 'data', filename)
     } else {
