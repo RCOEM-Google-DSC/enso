@@ -349,9 +349,10 @@ export default function CertificateMaker() {
                       <input
                         type="number"
                         value={config.fontSize}
-                        onChange={(e) =>
-                          saveConfig({ ...config, fontSize: parseInt(e.target.value) })
-                        }
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value) || 0
+                          saveConfig({ ...config, fontSize: val })
+                        }}
                         className="mt-1 flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm  focus:border-black-500 focus:outline-none focus:ring-1 focus:ring-gray-200"
                       />
                     </div>
@@ -362,9 +363,10 @@ export default function CertificateMaker() {
                       <input
                         type="number"
                         value={config.xOffset}
-                        onChange={(e) =>
-                          saveConfig({ ...config, xOffset: parseInt(e.target.value) })
-                        }
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value) || 0
+                          saveConfig({ ...config, xOffset: val })
+                        }}
                         className="mt-1 flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm  focus:border-black-500 focus:outline-none focus:ring-1 focus:ring-gray-200"
                       />
                     </div>
@@ -375,9 +377,10 @@ export default function CertificateMaker() {
                       <input
                         type="number"
                         value={config.yOffset}
-                        onChange={(e) =>
-                          saveConfig({ ...config, yOffset: parseInt(e.target.value) })
-                        }
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value) || 0
+                          saveConfig({ ...config, yOffset: val })
+                        }}
                         className="mt-1 flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm  focus:border-black-500 focus:outline-none focus:ring-1 focus:ring-gray-200"
                       />
                     </div>
@@ -411,12 +414,13 @@ export default function CertificateMaker() {
                               min="0"
                               max="255"
                               value={config.textColor.r}
-                              onChange={(e) =>
+                              onChange={(e) => {
+                                const val = Math.max(0, Math.min(255, parseInt(e.target.value) || 0))
                                 saveConfig({
                                   ...config,
-                                  textColor: { ...config.textColor, r: parseInt(e.target.value) }
+                                  textColor: { ...config.textColor, r: val }
                                 })
-                              }
+                              }}
                               className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
                             />
                           </div>
@@ -427,12 +431,13 @@ export default function CertificateMaker() {
                               min="0"
                               max="255"
                               value={config.textColor.g}
-                              onChange={(e) =>
+                              onChange={(e) => {
+                                const val = Math.max(0, Math.min(255, parseInt(e.target.value) || 0))
                                 saveConfig({
                                   ...config,
-                                  textColor: { ...config.textColor, g: parseInt(e.target.value) }
+                                  textColor: { ...config.textColor, g: val }
                                 })
-                              }
+                              }}
                               className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
                             />
                           </div>
@@ -443,12 +448,13 @@ export default function CertificateMaker() {
                               min="0"
                               max="255"
                               value={config.textColor.b}
-                              onChange={(e) =>
+                              onChange={(e) => {
+                                const val = Math.max(0, Math.min(255, parseInt(e.target.value) || 0))
                                 saveConfig({
                                   ...config,
-                                  textColor: { ...config.textColor, b: parseInt(e.target.value) }
+                                  textColor: { ...config.textColor, b: val }
                                 })
-                              }
+                              }}
                               className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
                             />
                           </div>
