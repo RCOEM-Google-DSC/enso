@@ -58,10 +58,16 @@ async function createCertificateBuffer(
   options: any = {}
 ): Promise<Uint8Array> {
   try {
-    // Merge provided options with defaults
-    const fontSize = Number(options.fontSize) || DEFAULTS.fontSize
-    const xOffset = Number(options.xOffset) || DEFAULTS.xOffset
-    const yOffset = Number(options.yOffset) || DEFAULTS.yOffset
+    // Merge provided options with defaults with proper NaN handling
+    const parsedFontSize = Number(options.fontSize)
+    const fontSize = !isNaN(parsedFontSize) && parsedFontSize > 0 ? parsedFontSize : DEFAULTS.fontSize
+    
+    const parsedXOffset = Number(options.xOffset)
+    const xOffset = !isNaN(parsedXOffset) ? parsedXOffset : DEFAULTS.xOffset
+    
+    const parsedYOffset = Number(options.yOffset)
+    const yOffset = !isNaN(parsedYOffset) ? parsedYOffset : DEFAULTS.yOffset
+    
     const color = options.textColor || DEFAULTS.color
 
     // 1. Load the PDF Template

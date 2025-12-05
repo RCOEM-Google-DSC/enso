@@ -175,7 +175,12 @@ export default function CertificateMaker() {
               .map((line) => line.trim())
               .filter((line) => line.length > 0)
           } else if (extension === 'csv') {
-            const lines = text.split('\n')
+            const lines = text.split('\n').filter(line => line.trim())
+            if (lines.length === 0) {
+              alert('CSV file is empty.')
+              return
+            }
+            
             const headers = lines[0].split(',').map((h) => h.trim().toLowerCase())
             const nameIndex = headers.indexOf('name')
 
@@ -186,6 +191,11 @@ export default function CertificateMaker() {
                 return nameIndex > -1 ? cols[nameIndex]?.trim() : cols[0]?.trim()
               })
               .filter(Boolean)
+            
+            if (names.length === 0) {
+              alert('No valid names found in CSV file. Please ensure your file has a "name" column header.')
+              return
+            }
           }
           setBulkNames(names)
         } catch (err) {
