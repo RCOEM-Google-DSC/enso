@@ -137,6 +137,7 @@ export default function CertificateMaker() {
           
           if (names.length === 0) {
             alert('No valid names found in Excel file. Please ensure your file has a column named "name" or "Name".')
+            return
           }
           setBulkNames(names as string[])
         } catch (e) {
@@ -158,9 +159,11 @@ export default function CertificateMaker() {
                 names = json.map((item) => item.name || item.Name).filter(Boolean)
                 if (names.length === 0) {
                   alert('Invalid JSON structure: Array items must have a "name" or "Name" field.\n\nExpected format:\n[\n  { "name": "John Doe" },\n  { "name": "Jane Smith" }\n]')
+                  return
                 }
               } else {
                 alert('Invalid JSON format: Root element must be an array.\n\nExpected format:\n[\n  { "name": "John Doe" },\n  { "name": "Jane Smith" }\n]')
+                return
               }
             } catch (jsonError) {
               alert('Invalid JSON file: ' + (jsonError instanceof Error ? jsonError.message : 'Failed to parse JSON. Please check the file format.'))
