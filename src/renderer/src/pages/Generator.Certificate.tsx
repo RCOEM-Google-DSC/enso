@@ -517,6 +517,7 @@ export default function CertificateMaker() {
                           value={testName}
                           onChange={(e) => setTestName(e.target.value)}
                           placeholder="Enter name for certificate..."
+                          autoFocus
                           className="pl-9 flex h-10 w-full rounded-md border border-gray-300 px-3 py-5 text-sm focus:ring-2 focus:ring-gray-300 focus:outline-none"
                         />
                       </div>
