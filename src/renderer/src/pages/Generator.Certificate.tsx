@@ -167,6 +167,7 @@ export default function CertificateMaker() {
               }
             } catch (jsonError) {
               alert('Invalid JSON file: ' + (jsonError instanceof Error ? jsonError.message : 'Failed to parse JSON. Please check the file format.'))
+              return
             }
           } else if (extension === 'txt') {
             names = text
@@ -348,9 +349,10 @@ export default function CertificateMaker() {
                       <label className="text-md font-medium text-gray-500">Font Size</label>
                       <input
                         type="number"
+                        min="1"
                         value={config.fontSize}
                         onChange={(e) => {
-                          const val = parseInt(e.target.value) || 0
+                          const val = Math.max(1, parseInt(e.target.value) || 1)
                           saveConfig({ ...config, fontSize: val })
                         }}
                         className="mt-1 flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm  focus:border-black-500 focus:outline-none focus:ring-1 focus:ring-gray-200"
