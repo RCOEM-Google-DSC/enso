@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Upload, FileText, Eye, Loader2, Check, File, CloudUpload, X } from 'lucide-react'
+import { Upload, FileText, Eye, Loader2, Check, File, CloudUpload, X, Trash2 } from 'lucide-react'
 import Pdfimage from '../assets/pdf.png'
 interface Template {
   name: string
@@ -14,6 +14,7 @@ export default function TemplatesCertificate() {
   const [isUploading, setIsUploading] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [showPreview, setShowPreview] = useState(false)
+  const [deletingTemplate, setDeletingTemplate] = useState<string | null>(null)
   useEffect(() => {
     loadTemplates()
   }, [])
@@ -105,6 +106,28 @@ export default function TemplatesCertificate() {
       }
     } catch (error) {
       console.error('Failed to open template:', error)
+    }
+  }
+
+  const handleDeleteTemplate = async (fileName: string, templateName: string) => {
+    if (!confirm(`Are you sure you want to delete the template "${templateName}"? This action cannot be undone.`)) {
+      return
+    }
+
+    setDeletingTemplate(fileName)
+    try {
+      const result = await window.electron.ipcRenderer.invoke('delete-template', fileName)
+      if (result.success) {
+        alert(`Template "${templateName}" deleted successfully!`)
+        await loadTemplates()
+      } else {
+        alert('Failed to delete template: ' + result.error)
+      }
+    } catch (error) {
+      console.error('Failed to delete template:', error)
+      alert('Failed to delete template')
+    } finally {
+      setDeletingTemplate(null)
     }
   }
 
@@ -266,12 +289,29 @@ export default function TemplatesCertificate() {
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => handleViewTemplate(template.fileName)}
-                    className="inline-flex items-center justify-center rounded-md border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 hover:text-black "
-                  >
-                    View PDF
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleViewTemplate(template.fileName)}
+                      className="inline-flex items-center justify-center rounded-md border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 hover:text-black "
+                    >
+                      View PDF
+                    </button>
+                    <button
+                      onClick={() => handleDeleteTemplate(template.fileName, template.name)}
+                      disabled={deletingTemplate === template.fileName}
+                      className="inline-flex items-center justify-center rounded-md border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {deletingTemplate === template.fileName ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        </>
+                      ) : (
+                        <>
+                          <Trash2 className="h-4 w-4" />
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
