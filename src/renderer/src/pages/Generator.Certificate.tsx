@@ -407,13 +407,15 @@ export default function CertificateMaker() {
                             value={`#${config.textColor.r.toString(16).padStart(2, '0')}${config.textColor.g.toString(16).padStart(2, '0')}${config.textColor.b.toString(16).padStart(2, '0')}`}
                             onChange={(e) => {
                               const hex = e.target.value
-                              const r = parseInt(hex.slice(1, 3), 16)
-                              const g = parseInt(hex.slice(3, 5), 16)
-                              const b = parseInt(hex.slice(5, 7), 16)
-                              saveConfig({
-                                ...config,
-                                textColor: { r, g, b }
-                              })
+                              if (hex.length === 7 && hex.startsWith('#')) {
+                                const r = parseInt(hex.slice(1, 3), 16) || 0
+                                const g = parseInt(hex.slice(3, 5), 16) || 0
+                                const b = parseInt(hex.slice(5, 7), 16) || 0
+                                saveConfig({
+                                  ...config,
+                                  textColor: { r, g, b }
+                                })
+                              }
                             }}
                             className="w-full h-10 rounded border border-gray-300 cursor-pointer"
                           />
