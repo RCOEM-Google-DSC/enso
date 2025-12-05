@@ -18,6 +18,7 @@ const TEMPLATE_DATA_FILE = join(app.getPath('userData'), 'certificate', 'templat
 // Default Fallbacks
 const DEFAULTS = {
   fontSize: 45,
+  xOffset: 0,
   yOffset: 25,
   color: { r: 93, g: 97, b: 103 }
 }
@@ -59,6 +60,7 @@ async function createCertificateBuffer(
   try {
     // Merge provided options with defaults
     const fontSize = Number(options.fontSize) || DEFAULTS.fontSize
+    const xOffset = Number(options.xOffset) || DEFAULTS.xOffset
     const yOffset = Number(options.yOffset) || DEFAULTS.yOffset
     const color = options.textColor || DEFAULTS.color
 
@@ -111,8 +113,8 @@ async function createCertificateBuffer(
     // 4. Calculate Text Width
     const textWidth = embeddedFont.widthOfTextAtSize(name, fontSize)
 
-    // 5. Position Logic (Centered)
-    const x = (width - textWidth) / 2
+    // 5. Position Logic (Centered with offsets)
+    const x = (width - textWidth) / 2 + xOffset
     // Vertical offset logic: Center + Offset
     const y = (height - fontSize) / 2 + yOffset
 
@@ -339,6 +341,26 @@ app.whenReady().then(async () => {
 
   ipcMain.on('open-pdf', async (_event, filePath) => {
     await shell.openPath(filePath)
+  })
+
+  // Delete template handler
+  ipcMain.handle('delete-template', async (_event, fileName) => {
+    try {
+      const filePath = join(CERTIFICATES_DIR, fileName)
+      
+      // Delete the PDF file
+      await fs.unlink(filePath)
+      
+      // Update template data
+      const templates = await loadTemplateData()
+      const updatedTemplates = templates.filter((t: any) => t.fileName !== fileName)
+      await saveTemplateData(updatedTemplates)
+      
+      return { success: true }
+    } catch (error) {
+      console.error('Failed to delete template:', error)
+      return { success: false, error: String(error) }
+    }
   })
 
   // --- CERTIFICATE GENERATOR HANDLERS ---

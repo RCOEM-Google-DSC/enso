@@ -30,6 +30,7 @@ interface GeneratedRecord {
 
 interface PdfConfig {
   fontSize: number
+  xOffset: number
   yOffset: number
   textColor: {
     r: number
@@ -47,6 +48,7 @@ export default function CertificateMaker() {
   const [showConfig, setShowConfig] = useState(false)
   const [config, setConfig] = useState<PdfConfig>({
     fontSize: 45,
+    xOffset: 0,
     yOffset: 25,
     textColor: { r: 93, g: 97, b: 103 }
   })
@@ -132,10 +134,14 @@ export default function CertificateMaker() {
           const names = json
             .map((row) => row.name || row.Name || Object.values(row)[0])
             .filter(Boolean)
+          
+          if (names.length === 0) {
+            alert('No valid names found in Excel file. Please ensure your file has a column named "name" or "Name".')
+          }
           setBulkNames(names as string[])
         } catch (e) {
           console.error(e)
-          alert('Failed to parse Excel file.')
+          alert('Failed to parse Excel file: ' + (e instanceof Error ? e.message : 'Unknown error'))
         }
       }
       reader.readAsArrayBuffer(file)
@@ -146,9 +152,18 @@ export default function CertificateMaker() {
           let names: string[] = []
 
           if (extension === 'json') {
-            const json = JSON.parse(text)
-            if (Array.isArray(json)) {
-              names = json.map((item) => item.name || item.Name).filter(Boolean)
+            try {
+              const json = JSON.parse(text)
+              if (Array.isArray(json)) {
+                names = json.map((item) => item.name || item.Name).filter(Boolean)
+                if (names.length === 0) {
+                  alert('Invalid JSON structure: Array items must have a "name" or "Name" field.\n\nExpected format:\n[\n  { "name": "John Doe" },\n  { "name": "Jane Smith" }\n]')
+                }
+              } else {
+                alert('Invalid JSON format: Root element must be an array.\n\nExpected format:\n[\n  { "name": "John Doe" },\n  { "name": "Jane Smith" }\n]')
+              }
+            } catch (jsonError) {
+              alert('Invalid JSON file: ' + (jsonError instanceof Error ? jsonError.message : 'Failed to parse JSON. Please check the file format.'))
             }
           } else if (extension === 'txt') {
             names = text
@@ -170,7 +185,7 @@ export default function CertificateMaker() {
           }
           setBulkNames(names)
         } catch (err) {
-          alert('Failed to parse file: ' + err)
+          alert('Failed to parse file: ' + (err instanceof Error ? err.message : 'Unknown error'))
         }
       }
       reader.readAsText(file)
@@ -339,6 +354,19 @@ export default function CertificateMaker() {
                     </div>
                     <div>
                       <label className="text-md font-medium text-gray-500">
+                        Horizontal Offset (X)
+                      </label>
+                      <input
+                        type="number"
+                        value={config.xOffset}
+                        onChange={(e) =>
+                          saveConfig({ ...config, xOffset: parseInt(e.target.value) })
+                        }
+                        className="mt-1 flex h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm  focus:border-black-500 focus:outline-none focus:ring-1 focus:ring-gray-200"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-md font-medium text-gray-500">
                         Vertical Offset (Y)
                       </label>
                       <input
@@ -352,64 +380,76 @@ export default function CertificateMaker() {
                     </div>
                     <div className="col-span-2">
                       <label className="text-md font-medium text-gray-500 mb-1 block">
-                        Text Color (RGB)
+                        Text Color
                       </label>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 items-end">
                         <div className="flex-1">
-                          <span className="text-[10px] text-red-500 font-bold block">Red</span>
                           <input
-                            type="number"
-                            min="0"
-                            max="255"
-                            value={config.textColor.r}
-                            onChange={(e) =>
+                            type="color"
+                            value={`#${config.textColor.r.toString(16).padStart(2, '0')}${config.textColor.g.toString(16).padStart(2, '0')}${config.textColor.b.toString(16).padStart(2, '0')}`}
+                            onChange={(e) => {
+                              const hex = e.target.value
+                              const r = parseInt(hex.slice(1, 3), 16)
+                              const g = parseInt(hex.slice(3, 5), 16)
+                              const b = parseInt(hex.slice(5, 7), 16)
                               saveConfig({
                                 ...config,
-                                textColor: { ...config.textColor, r: parseInt(e.target.value) }
+                                textColor: { r, g, b }
                               })
-                            }
-                            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+                            }}
+                            className="w-full h-10 rounded border border-gray-300 cursor-pointer"
                           />
                         </div>
-                        <div className="flex-1">
-                          <span className="text-[10px] text-green-500 font-bold block">Green</span>
-                          <input
-                            type="number"
-                            min="0"
-                            max="255"
-                            value={config.textColor.g}
-                            onChange={(e) =>
-                              saveConfig({
-                                ...config,
-                                textColor: { ...config.textColor, g: parseInt(e.target.value) }
-                              })
-                            }
-                            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
-                          />
+                        <div className="flex gap-2 flex-1">
+                          <div className="flex-1">
+                            <span className="text-[10px] text-red-500 font-bold block">R</span>
+                            <input
+                              type="number"
+                              min="0"
+                              max="255"
+                              value={config.textColor.r}
+                              onChange={(e) =>
+                                saveConfig({
+                                  ...config,
+                                  textColor: { ...config.textColor, r: parseInt(e.target.value) }
+                                })
+                              }
+                              className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <span className="text-[10px] text-green-500 font-bold block">G</span>
+                            <input
+                              type="number"
+                              min="0"
+                              max="255"
+                              value={config.textColor.g}
+                              onChange={(e) =>
+                                saveConfig({
+                                  ...config,
+                                  textColor: { ...config.textColor, g: parseInt(e.target.value) }
+                                })
+                              }
+                              className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <span className="text-[10px] text-blue-500 font-bold block">B</span>
+                            <input
+                              type="number"
+                              min="0"
+                              max="255"
+                              value={config.textColor.b}
+                              onChange={(e) =>
+                                saveConfig({
+                                  ...config,
+                                  textColor: { ...config.textColor, b: parseInt(e.target.value) }
+                                })
+                              }
+                              className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
+                            />
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <span className="text-[10px] text-blue-500 font-bold block">Blue</span>
-                          <input
-                            type="number"
-                            min="0"
-                            max="255"
-                            value={config.textColor.b}
-                            onChange={(e) =>
-                              saveConfig({
-                                ...config,
-                                textColor: { ...config.textColor, b: parseInt(e.target.value) }
-                              })
-                            }
-                            className="w-full rounded border border-gray-300 px-2 py-1 text-sm"
-                          />
-                        </div>
-                        <div
-                          className="w-10 h-10 rounded border border-gray-300 mt-auto shadow-sm"
-                          style={{
-                            backgroundColor: `rgb(${config.textColor.r}, ${config.textColor.g}, ${config.textColor.b})`
-                          }}
-                          title="Color Preview"
-                        />
                       </div>
                     </div>
                   </div>
@@ -508,6 +548,17 @@ export default function CertificateMaker() {
                 ) : (
                   // Bulk Mode UI
                   <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                    {/* Instructions */}
+                    <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
+                      <p className="font-medium mb-2">📋 Data File Format Instructions:</p>
+                      <ul className="list-disc list-inside space-y-1 text-xs">
+                        <li><strong>JSON:</strong> Array of objects with "name" field: <code>[{`{ "name": "John Doe" }`}]</code></li>
+                        <li><strong>CSV:</strong> Must have a "name" column header</li>
+                        <li><strong>Excel:</strong> Must have a "name" or "Name" column</li>
+                        <li><strong>TXT:</strong> One name per line</li>
+                      </ul>
+                    </div>
+
                     <div className="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center">
                       <input
                         type="file"
