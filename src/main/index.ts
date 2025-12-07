@@ -60,14 +60,15 @@ async function createCertificateBuffer(
   try {
     // Merge provided options with defaults with proper NaN handling
     const parsedFontSize = Number(options.fontSize)
-    const fontSize = !isNaN(parsedFontSize) && parsedFontSize > 0 ? parsedFontSize : DEFAULTS.fontSize
-    
+    const fontSize =
+      !isNaN(parsedFontSize) && parsedFontSize > 0 ? parsedFontSize : DEFAULTS.fontSize
+
     const parsedXOffset = Number(options.xOffset)
     const xOffset = !isNaN(parsedXOffset) ? parsedXOffset : DEFAULTS.xOffset
-    
+
     const parsedYOffset = Number(options.yOffset)
     const yOffset = !isNaN(parsedYOffset) ? parsedYOffset : DEFAULTS.yOffset
-    
+
     const color = options.textColor || DEFAULTS.color
 
     // 1. Load the PDF Template
@@ -353,15 +354,15 @@ app.whenReady().then(async () => {
   ipcMain.handle('delete-template', async (_event, fileName) => {
     try {
       const filePath = join(CERTIFICATES_DIR, fileName)
-      
+
       // Delete the PDF file
       await fs.unlink(filePath)
-      
+
       // Update template data
       const templates = await loadTemplateData()
       const updatedTemplates = templates.filter((t: any) => t.fileName !== fileName)
       await saveTemplateData(updatedTemplates)
-      
+
       return { success: true }
     } catch (error) {
       console.error('Failed to delete template:', error)

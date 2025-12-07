@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from 'react'
-import { Upload, FileText, Eye, Loader2, Check, File, CloudUpload, X, Trash2 } from 'lucide-react'
+import { Upload, Loader2, CloudUpload, X, Trash2 } from 'lucide-react'
 import Pdfimage from '../assets/pdf.png'
 interface Template {
   name: string
@@ -110,7 +111,11 @@ export default function TemplatesCertificate() {
   }
 
   const handleDeleteTemplate = async (fileName: string, templateName: string) => {
-    if (!confirm(`Are you sure you want to delete the template "${templateName}"? This action cannot be undone.`)) {
+    if (
+      !confirm(
+        `Are you sure you want to delete the template "${templateName}"? This action cannot be undone.`
+      )
+    ) {
       return
     }
 

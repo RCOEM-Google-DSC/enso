@@ -129,14 +129,17 @@ export default function CertificateMaker() {
           const workbook = XLSX.read(data, { type: 'array' })
           const sheetName = workbook.SheetNames[0]
           const sheet = workbook.Sheets[sheetName]
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const json = XLSX.utils.sheet_to_json(sheet) as any[]
 
           const names = json
             .map((row) => row.name || row.Name || Object.values(row)[0])
             .filter(Boolean)
-          
+
           if (names.length === 0) {
-            alert('No valid names found in Excel file. Please ensure your file has a column named "name" or "Name".')
+            alert(
+              'No valid names found in Excel file. Please ensure your file has a column named "name" or "Name".'
+            )
             return
           }
           setBulkNames(names as string[])
@@ -158,15 +161,24 @@ export default function CertificateMaker() {
               if (Array.isArray(json)) {
                 names = json.map((item) => item.name || item.Name).filter(Boolean)
                 if (names.length === 0) {
-                  alert('Invalid JSON structure: Array items must have a "name" or "Name" field.\n\nExpected format:\n[\n  { "name": "John Doe" },\n  { "name": "Jane Smith" }\n]')
+                  alert(
+                    'Invalid JSON structure: Array items must have a "name" or "Name" field.\n\nExpected format:\n[\n  { "name": "John Doe" },\n  { "name": "Jane Smith" }\n]'
+                  )
                   return
                 }
               } else {
-                alert('Invalid JSON format: Root element must be an array.\n\nExpected format:\n[\n  { "name": "John Doe" },\n  { "name": "Jane Smith" }\n]')
+                alert(
+                  'Invalid JSON format: Root element must be an array.\n\nExpected format:\n[\n  { "name": "John Doe" },\n  { "name": "Jane Smith" }\n]'
+                )
                 return
               }
             } catch (jsonError) {
-              alert('Invalid JSON file: ' + (jsonError instanceof Error ? jsonError.message : 'Failed to parse JSON. Please check the file format.'))
+              alert(
+                'Invalid JSON file: ' +
+                  (jsonError instanceof Error
+                    ? jsonError.message
+                    : 'Failed to parse JSON. Please check the file format.')
+              )
               return
             }
           } else if (extension === 'txt') {
@@ -175,12 +187,12 @@ export default function CertificateMaker() {
               .map((line) => line.trim())
               .filter((line) => line.length > 0)
           } else if (extension === 'csv') {
-            const lines = text.split('\n').filter(line => line.trim())
+            const lines = text.split('\n').filter((line) => line.trim())
             if (lines.length === 0) {
               alert('CSV file is empty.')
               return
             }
-            
+
             const headers = lines[0].split(',').map((h) => h.trim().toLowerCase())
             const nameIndex = headers.indexOf('name')
 
@@ -191,9 +203,11 @@ export default function CertificateMaker() {
                 return nameIndex > -1 ? cols[nameIndex]?.trim() : cols[0]?.trim()
               })
               .filter(Boolean)
-            
+
             if (names.length === 0) {
-              alert('No valid names found in CSV file. Please ensure your file has a "name" column header.')
+              alert(
+                'No valid names found in CSV file. Please ensure your file has a "name" column header.'
+              )
               return
             }
           }
@@ -429,7 +443,10 @@ export default function CertificateMaker() {
                               max="255"
                               value={config.textColor.r}
                               onChange={(e) => {
-                                const val = Math.max(0, Math.min(255, parseInt(e.target.value) || 0))
+                                const val = Math.max(
+                                  0,
+                                  Math.min(255, parseInt(e.target.value) || 0)
+                                )
                                 saveConfig({
                                   ...config,
                                   textColor: { ...config.textColor, r: val }
@@ -446,7 +463,10 @@ export default function CertificateMaker() {
                               max="255"
                               value={config.textColor.g}
                               onChange={(e) => {
-                                const val = Math.max(0, Math.min(255, parseInt(e.target.value) || 0))
+                                const val = Math.max(
+                                  0,
+                                  Math.min(255, parseInt(e.target.value) || 0)
+                                )
                                 saveConfig({
                                   ...config,
                                   textColor: { ...config.textColor, g: val }
@@ -463,7 +483,10 @@ export default function CertificateMaker() {
                               max="255"
                               value={config.textColor.b}
                               onChange={(e) => {
-                                const val = Math.max(0, Math.min(255, parseInt(e.target.value) || 0))
+                                const val = Math.max(
+                                  0,
+                                  Math.min(255, parseInt(e.target.value) || 0)
+                                )
                                 saveConfig({
                                   ...config,
                                   textColor: { ...config.textColor, b: val }
@@ -574,12 +597,22 @@ export default function CertificateMaker() {
                   <div className="animate-in fade-in slide-in-from-top-2 duration-300">
                     {/* Instructions */}
                     <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
-                      <p className="font-medium mb-2">📋 Data File Format Instructions:</p>
-                      <ul className="list-disc list-inside space-y-1 text-xs">
-                        <li><strong>JSON:</strong> Array of objects with "name" field: <code>[{`{ "name": "John Doe" }`}]</code></li>
-                        <li><strong>CSV:</strong> Must have a "name" column header</li>
-                        <li><strong>Excel:</strong> Must have a "name" or "Name" column</li>
-                        <li><strong>TXT:</strong> One name per line</li>
+                      <p className="font-medium mb-2"> Data File Format Instructions:</p>
+                      <ul className="list-disc list-inside space-y-1 text-md">
+                        <li>
+                          <strong>JSON:</strong> Array of objects with &quot;name&quot; field: [
+                          {`{ "name": "John Doe" }`}]
+                        </li>
+                        <li>
+                          <strong>CSV:</strong> Must have a &quot;name&quot; column header
+                        </li>
+                        <li>
+                          <strong>Excel:</strong> Must have a &quot;name&quot; or &quot;Name&quot;
+                          column
+                        </li>
+                        <li>
+                          <strong>TXT:</strong> One name per line
+                        </li>
                       </ul>
                     </div>
 
